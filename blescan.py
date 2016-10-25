@@ -1,7 +1,7 @@
 # BLE iBeaconScanner based on https://github.com/adamf/BLE/blob/master/ble-scanner.py
 # JCS 06/07/14
 
-DEBUG = False
+
 # BLE scanner based on https://github.com/adamf/BLE/blob/master/ble-scanner.py
 # BLE scanner, based on https://code.google.com/p/pybluez/source/browse/trunk/examples/advanced/inquiry-with-rssi.py
 
@@ -149,47 +149,30 @@ def parse_events(sock, loop_count=100):
                 report_pkt_offset = 0
                 for i in range(0, num_reports):
 		
-		    if (DEBUG == True):
-			print "-------------"
-                    	#print "\tfullpacket: ", printpacket(pkt)
-		    	print "\tUDID: ", printpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
-		    	print "\tMAJOR: ", printpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
-		    	print "\tMINOR: ", printpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
-                    	print "\tMAC address: ", packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-		    	# commented out - don't know what this byte is.  It's NOT TXPower
-                    	txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
-                    	print "\t(Unknown):", txpower
+		    print "-------------"
+                    #print "\tfullpacket: ", printpacket(pkt)
+		    print "\tUDID: ", printpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6])
+		    print "\tMAJOR: ", printpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4])
+		    print "\tMINOR: ", printpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2])
+                    print "\tMAC address: ", packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
+		    # commented out - don't know what this byte is.  It's NOT TXPower
+                    txpower, = struct.unpack("b", pkt[report_pkt_offset -2])
+                    print "\t(Unknown):", txpower
 	
-                    	rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
-                    	print "\tRSSI:", rssi
-		    # build the return string
-                    Adstring = packed_bdaddr_to_string(pkt[report_pkt_offset + 3:report_pkt_offset + 9])
-		    Adstring += ","
-		    Adstring += returnstringpacket(pkt[report_pkt_offset -22: report_pkt_offset - 6]) 
-		    Adstring += ","
-		    Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -6: report_pkt_offset - 4]) 
-		    Adstring += ","
-		    Adstring += "%i" % returnnumberpacket(pkt[report_pkt_offset -4: report_pkt_offset - 2]) 
-		    Adstring += ","
-		    Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -2])
-		    Adstring += ","
-		    Adstring += "%i" % struct.unpack("b", pkt[report_pkt_offset -1])
-
-		    #print "\tAdstring=", Adstring
- 		    myFullList.append(Adstring)
+                    rssi, = struct.unpack("b", pkt[report_pkt_offset -1])
+                    print "\tRSSI:", rssi
+		    
                 done = True
-                post2()
+                post()
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
-    return myFullList
 
 
 
 
-def post2():
+def post():
     global user_id
     global location
-    params1 = urllib.urlencode({'user_id':"1234"})
-    params2 = urllib.urlencode({'location':"123"})
+    params1 = urllib.urlencode({'user_id':"1234"},{'location':"123"})
 
     headers = {"Content-type":"application/x-www-form-urlencoded"}
     conn=httplib.HTTPConnection("52.78.88.51:8080")
