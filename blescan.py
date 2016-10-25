@@ -19,6 +19,8 @@ import os
 import sys
 import struct
 import bluetooth._bluetooth as bluez
+import urllib
+import httplib
 
 LE_META_EVENT = 0x3e
 LE_PUBLIC_ADDRESS=0x00
@@ -176,7 +178,23 @@ def parse_events(sock, loop_count=100):
 		    #print "\tAdstring=", Adstring
  		    myFullList.append(Adstring)
                 done = True
+                post2()
     sock.setsockopt( bluez.SOL_HCI, bluez.HCI_FILTER, old_filter )
     return myFullList
 
 
+
+
+def post2():
+    global user_id
+    global location
+    params1 = urllib.urlencode({'user_id':"1234"})
+    params2 = urllib.urlencode({'location':"123"})
+
+    headers = {"Content-type":"application/x-www-form-urlencoded"}
+    conn=httplib.HTTPConnection("52.78.88.51:8080")
+    conn.request("POST","/BadgeMaServer/declaration.do", params1, headers)
+    response = conn.getresponse()
+    data = response.read()
+    print data
+    conn.close()
